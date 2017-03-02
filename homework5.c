@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <unistd.h>
+#include <sys/inotify.h>
 
 int main(int argc, char *argv[]) {
 	bool opt_h = false, opt_d = false;
@@ -30,6 +31,38 @@ int main(int argc, char *argv[]) {
 	if (argc < 2) //Print Usage Information
 	{
 		printf("Usage: %s EXECUTABLE\n",argv[0]);
+	}
+///////////////////////////////////////////////////////
+	int fd = inotify_init();
+	int wd, x;
+	wd = inotify_add_watch(fd, argv[1], IN_OPEN | IN_ACCESS | IN_MODIFY);
+
+	char buf[1000];
+	char *p = NULL;
+
+
+	while(1) {
+		x = read(fd, buf, 1000);
+
+		if(x == -1) {
+			printf("ERROR!");
+			return EXIT_FAILURE;
+		}
+		for(p = buf; p < (buf+x);) {
+			struct inotify_event* event = (struct inotify_event*)p;
+
+
+			if((event -> mask&IN_OPEN) == IN_OPEN){
+				printf("file opened\n");
+			}
+			if((event -> mask&IN_MODIFY) == IN_MODIFY){
+				printf("file modified\n");
+			}
+
+
+
+			p += sizeof(struct inotify_event) + event->len;
+		}
 	}
 
 	return EXIT_SUCCESS;
