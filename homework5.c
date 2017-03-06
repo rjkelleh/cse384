@@ -33,6 +33,16 @@ int main(int argc, char *argv[]) {
         printf("*Customize Backup Location*\n");
     }
 
+    if (opt_m) //Disable Meta-Data Duplication
+    {
+	printf("*Disable Meta-Data Duplication*\n");
+    }
+
+    if (opt_t) //Append Duplication Time
+    {
+	printf("*Append Duplication Time*");
+    }
+
     if (argc < 2) //Print Usage Information
     {
         printf("Usage: %s EXECUTABLE\n",argv[0]);
