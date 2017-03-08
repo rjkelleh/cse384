@@ -10,22 +10,33 @@
 int cp(const char *to, const char *from);
 
 int main(int argc, char *argv[]) {
-    bool opt_h = false, opt_d = false;
-    int opt = getopt(argc, argv, "hd");
+    bool opt_h = false, opt_d = false, opt_m = false, opt_t = false;
+    int opt = getopt(argc, argv, "hdmt");
     while (opt != -1) //GetOpts
     {
-        if (opt == 'h') {
+        if (opt == 'h')
+	{
             opt_h = true;
-        } else if (opt == 'd') {
+        }
+	else if (opt == 'd')
+	{
             opt_d = true;
         }
-        opt = getopt(argc, argv, "hd");
+	else if (opt == 'm')
+	{
+	    opt_m = true;
+	}
+	else if (opt == 't')
+	{
+	    opt_t = true;
+	}
+        opt = getopt(argc, argv, "hdmt");
     }
 
     
     if (opt_h) //Print Help Information
     {
-        printf("*Display Help Information*\n");
+        printf("$Usage\n");
     }
 
     if (opt_d) //Customize Backup Location
