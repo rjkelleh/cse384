@@ -7,12 +7,15 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <pwd.h>
+#include <string.h>
 
 int cp(const char* to, const char* from);
 
 int main(int argc, char *argv[]) {
   bool opt_h = false, opt_d = false, opt_m = false, opt_t = false;
   int opt = getopt(argc, argv, "hdmt");
+  int location = 0;
   while (opt != -1) //GetOpts
   {
     if (opt == 'h') {
@@ -44,7 +47,7 @@ int main(int argc, char *argv[]) {
 
   if (opt_d) //Customize Backup Location
   {
-    printf("*Customize Backup Location*\n");
+    location = 1;
   }
 
   if (opt_m) //Disable Meta-Deta Duplication
@@ -63,11 +66,11 @@ int main(int argc, char *argv[]) {
     return EXIT_SUCCESS;
   }
 
-  if (argc > 2) //Print Usage Information
-  {
-    printf("Error: Too many arguments\n");
-    return EXIT_FAILURE;
-  }
+  //if (argc > 4) //Print Usage Information
+  //{
+  //  printf("Error: Too many arguments\n");
+  //  return EXIT_FAILURE;
+ // }
 ///////////////////////////////////////////////////////
   int fd = inotify_init();
   int wd, x;
@@ -77,7 +80,28 @@ int main(int argc, char *argv[]) {
   char *p = NULL;
 
 
-  printf("Username: %d\n", getpwuid(getuid()));
+  char *name;
+  struct passwd *pass = getpwuid(getuid());
+  name = pass->pw_name;
+  //printf("Username: %s", name);
+
+  char a[1000] = "/home/";
+  strcat(a,name);
+  char b[1000] = "/Documents/test";
+  strcat(a,b);
+  
+
+  if (location == 1) {
+  	strcpy(a, argv[3]);
+  }
+
+  printf("%s\n",a);
+
+  char *path = realpath(argv[1], NULL);
+
+  printf("%s\n",path);
+
+  cp(a,path);
 
 
   while(1) {
@@ -96,7 +120,7 @@ int main(int argc, char *argv[]) {
       }
       if((event -> mask&IN_MODIFY) == IN_MODIFY){
         printf("file modified\n");
-        cp("/home/douglasporreca/Documents/test","/home/douglasporreca/.git/cse384/test");
+  		cp(a,path);
       }
 
       p += sizeof(struct inotify_event) + event->len;
