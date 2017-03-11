@@ -92,7 +92,7 @@ int main(int argc, char *argv[]) {
   
 
   if (location == 1) {
-  	strcpy(a, argv[3]);
+    strcpy(a, argv[3]);
   }
 
   printf("%s\n",a);
@@ -120,7 +120,7 @@ int main(int argc, char *argv[]) {
       }
       if((event -> mask&IN_MODIFY) == IN_MODIFY){
         printf("file modified\n");
-  		cp(a,path);
+      cp(a,path);
       }
 
       p += sizeof(struct inotify_event) + event->len;
