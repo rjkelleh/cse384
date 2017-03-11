@@ -6,6 +6,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#define birthtime(x) x.st_ctime
 
 int cp(const char *to, const char *from);
 
@@ -46,12 +47,45 @@ int main(int argc, char *argv[]) {
 
     if (opt_m) //Disable Meta-Data Duplication
     {
-	printf("*Disable Meta-Data Duplication*\n");
+	FILE *p1, *p2;
+	char x;
+
+	p1 = fopen("argv[1]", "r");
+	if (p1 == NULL)
+	{
+	    printf("ERROR! File cannot be opened!");
+	    exit(1);
+	}
+
+	p2 = fopen("argv[1]_copy", "w");
+	if (p2 == NULL)
+	{
+	    printf("ERROR! File cannot be opened!");
+	    exit(1);
+	}
+
+	do
+	{
+	    x = fgetc(p1);
+	    fputc(x, p2);
+	} while (x != EOF);
+	
+	fclose(p1);
+	fclose(p2);
     }
 
     if (opt_t) //Append Duplication Time
     {
-	printf("*Append Duplication Time*");
+	struct stat st;
+	
+	if(stat(argv[1], &st) != 0)
+	{
+	    perror(argv[1]);
+	}
+	
+	("argv[1]_%i\n", birthtime(st));
+
+	exit(1);
     }
 
     if (argc < 2) //Print Usage Information
