@@ -3,7 +3,6 @@
 #include <stdbool.h>
 #include <unistd.h>
 #include <sys/inotify.h>
-//
 #include <errno.h>
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -50,15 +49,43 @@ int main(int argc, char *argv[]) {
     location = 1;
   }
 
-  if (opt_m) //Disable Meta-Deta Duplication
-  {
-    printf("*Disable Meta-Deta Duplication*\n");
-  }
+  if (opt_m) //Disable Meta-Data Duplication
+    {
+	FILE *p1, *p2;
+	char x;
 
-  if (opt_t) //Append Duplication to File Name
-  {
-    printf("*Append Duplication to File Name*\n");
-  }
+	p1 = fopen("argv[1]", "r");
+	if (p1 == NULL)
+	{
+	    printf("ERROR! File cannot be opened!");
+	    exit(1);
+	}
+
+	p2 = fopen("argv[1]_copy", "w");
+	if (p2 == NULL)
+	{
+	    printf("ERROR! File cannot be opened!");
+	    exit(1);
+	}
+
+	do
+	{
+	    x = fgetc(p1);
+	    fputc(x, p2);
+	} while (x != EOF);
+	
+	fclose(p1);
+	fclose(p2);
+    }
+
+    if (opt_t) //Append Duplication Time
+    {
+	struct stat st;
+	
+	stat("argv[1]", &st);
+	char clock = localtime(&(st.st_ctime));
+    }
+
 
   if (argc < 2) //Print Usage Information
   {
@@ -66,12 +93,6 @@ int main(int argc, char *argv[]) {
     return EXIT_SUCCESS;
   }
 
-  //if (argc > 4) //Print Usage Information
-  //{
-  //  printf("Error: Too many arguments\n");
-  //  return EXIT_FAILURE;
- // }
-///////////////////////////////////////////////////////
   int fd = inotify_init();
   int wd, x;
   wd = inotify_add_watch(fd, argv[1], IN_OPEN | IN_ACCESS | IN_MODIFY);
